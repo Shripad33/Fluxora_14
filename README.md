@@ -68,7 +68,7 @@ Output:
 
 ---
 
-## ▶️ How to Run
+##  How to Run
 
 1. Install:
 pip install flask
@@ -84,7 +84,7 @@ http://127.0.0.1:5000
 
 ---
 
-## 🏆 Key Innovation
+##  Key Innovation
 - Handles broken conversations  
 - Recovers missing context dynamically  
 - Uses scoring-based memory system  
@@ -92,12 +92,12 @@ http://127.0.0.1:5000
 
 ---
 
-## 🚀 Future Scope
+##  Future Scope
 - Add database (MongoDB / Firebase)  
 - Use embeddings for semantic search  
 - Deploy to cloud  
 
 ---
 
-## 🎤 Pitch
+
 > “Our system reconstructs missing conversational context using relevance scoring and memory prioritization to ensure coherent AI responses.”
