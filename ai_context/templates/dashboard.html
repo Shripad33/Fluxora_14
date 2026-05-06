@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ContextAI — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0c0d10;
+      --sidebar: #0f1116;
+      --surface: #13151a;
+      --surface2: #1a1d25;
+      --border: #1e2130;
+      --border2: #252a3a;
+      --accent: #4f7cff;
+      --accent-glow: rgba(79, 124, 255, 0.12);
+      --accent-dim: rgba(79, 124, 255, 0.5);
+      --text: #e8eaf0;
+      --text-secondary: #6e7490;
+      --text-tertiary: #3d4260;
+      --user-bubble: #1c2040;
+      --user-border: #2a3060;
+      --ai-bubble: #131820;
+      --ai-border: #1e2535;
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      display: flex;
+      height: 100vh;
+    }
+
+    /* ─── SIDEBAR ─── */
+    .sidebar {
+      width: 260px;
+      min-width: 260px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 16px;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 4px;
+      margin-bottom: 24px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo-icon svg {
+      width: 16px;
+      height: 16px;
+      fill: white;
+    }
+
+    .logo-name {
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .logo-name span { color: var(--accent); }
+
+    .new-chat-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 14px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      margin-bottom: 24px;
+      transition: all 0.15s;
+      width: 100%;
+      text-align: left;
+    }
+
+    .new-chat-btn:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .new-chat-btn svg { width: 14px; height: 14px; fill: currentColor; flex-shrink: 0; }
+
+    .sidebar-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-tertiary);
+      padding: 0 4px;
+      margin-bottom: 8px;
+    }
+
+    .session-item {
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 12px;
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 0.15s;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .session-item:hover { background: var(--surface); color: var(--text); }
+    .session-item.active { background: var(--surface); color: var(--text); }
+
+    .sidebar-footer {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding-top: 16px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 4px;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      color: white;
+      flex-shrink: 0;
+    }
+
+    .user-meta { flex: 1; overflow: hidden; }
+
+    .user-meta .name {
+      font-size: 13px;
+      font-weight: 500;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .user-meta .role {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .logout-btn {
+      background: none;
+      border: none;
+      color: var(--text-tertiary);
+      cursor: pointer;
+      padding: 4px;
+      border-radius: 6px;
+      transition: color 0.15s;
+      display: flex;
+      align-items: center;
+    }
+
+    .logout-btn:hover { color: var(--text-secondary); }
+    .logout-btn svg { width: 16px; height: 16px; fill: currentColor; }
+
+    /* ─── MAIN CHAT AREA ─── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--bg);
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 28px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .topbar-title {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: #4cd97b;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    /* ─── MESSAGES ─── */
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 0;
+      scroll-behavior: smooth;
+    }
+
+    .messages::-webkit-scrollbar { width: 4px; }
+    .messages::-webkit-scrollbar-track { background: transparent; }
+    .messages::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    .message-wrapper {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 28px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .message {
+      margin-bottom: 20px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .msg-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .msg-avatar.user-av {
+      background: var(--accent);
+      color: white;
+    }
+
+    .msg-avatar.ai-av {
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+    }
+
+    .msg-avatar.ai-av svg {
+      width: 14px;
+      height: 14px;
+      fill: var(--accent);
+    }
+
+    .msg-content { flex: 1; min-width: 0; }
+
+    .msg-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .msg-name {
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .msg-time {
+      font-size: 11px;
+      color: var(--text-tertiary);
+    }
+
+    .msg-bubble {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text);
+    }
+
+    .msg-bubble.user {
+      background: var(--user-bubble);
+      border: 1px solid var(--user-border);
+      border-radius: 4px 14px 14px 14px;
+      padding: 13px 16px;
+      display: inline-block;
+      max-width: 100%;
+    }
+
+    .msg-bubble.ai {
+      color: #c8cce0;
+    }
+
+    /* ─── EMPTY STATE ─── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      text-align: center;
+      padding: 40px;
+    }
+
+    .empty-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+
+    .empty-icon svg {
+      width: 26px;
+      height: 26px;
+      fill: var(--accent);
+    }
+
+    .empty-state h2 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      letter-spacing: -0.3px;
+    }
+
+    .empty-state p {
+      font-size: 14px;
+      color: var(--text-secondary);
+      max-width: 380px;
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .suggestion-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .suggestion {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 13px 15px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .suggestion:hover {
+      background: var(--surface2);
+      border-color: var(--border2);
+      transform: translateY(-1px);
+    }
+
+    .suggestion .s-label {
+      font-size: 12px;
+      font-weight: 500;
+      margin-bottom: 3px;
+    }
+
+    .suggestion .s-text {
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    /* ─── THINKING INDICATOR ─── */
+    .thinking {
+      display: none;
+    }
+
+    .thinking.show {
+      display: flex;
+    }
+
+    .thinking-dots {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding: 8px 0;
+    }
+
+    .thinking-dots span {
+      width: 6px;
+      height: 6px;
+      background: var(--text-secondary);
+      border-radius: 50%;
+      animation: bounce 1.2s infinite;
+    }
+
+    .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.7); opacity: 0.4; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* ─── INPUT AREA ─── */
+    .input-area {
+      padding: 20px 28px 24px;
+      border-top: 1px solid var(--border);
+      background: var(--bg);
+    }
+
+    .input-wrapper {
+      max-width: 760px;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .input-box {
+      display: flex;
+      align-items: flex-end;
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 14px;
+      padding: 12px 14px;
+      gap: 10px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-box:focus-within {
+      border-color: var(--accent-dim);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    #userInput {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      resize: none;
+      max-height: 160px;
+      min-height: 24px;
+      overflow-y: auto;
+    }
+
+    #userInput::placeholder { color: var(--text-tertiary); }
+
+    #userInput::-webkit-scrollbar { width: 3px; }
+    #userInput::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+    .send-btn {
+      width: 34px;
+      height: 34px;
+      background: var(--accent);
+      border: none;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.15s;
+    }
+
+    .send-btn:hover { background: #3d6aff; transform: scale(1.05); }
+    .send-btn:active { transform: scale(0.96); }
+    .send-btn:disabled { background: var(--border2); cursor: not-allowed; transform: none; }
+
+    .send-btn svg { width: 15px; height: 15px; fill: white; }
+
+    .input-hint {
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-tertiary);
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="logo-row">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-8v4h4l-5 8z"/></svg>
+    </div>
+    <div class="logo-name">Context<span>AI</span></div>
+  </div>
+
+  <button class="new-chat-btn" onclick="newChat()">
+    <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+    New conversation
+  </button>
+
+  <div class="sidebar-label">Recent</div>
+  <div id="sessionList"></div>
+
+  <div class="sidebar-footer">
+    <div class="user-info">
+      <div class="avatar" id="userAvatar">U</div>
+      <div class="user-meta">
+        <div class="name" id="usernameDisplay">{{ username }}</div>
+        <div class="role">Context Memory Active</div>
+      </div>
+      <button class="logout-btn" onclick="window.location.href='/logout'" title="Sign out">
+        <svg viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+      </button>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-title">Conversation</div>
+    <div class="status-badge">
+      <div class="status-dot"></div>
+      Context Recovery Active
+    </div>
+  </div>
+
+  <div class="messages" id="messages">
+    <div class="message-wrapper" id="emptyState">
+      <div class="empty-state">
+        <div class="empty-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-8v4h4l-5 8z"/></svg>
+        </div>
+        <h2>Context Recovery AI</h2>
+        <p>Start a conversation. I reconstruct context from memory to keep our dialogue coherent — even across broken conversations.</p>
+        <div class="suggestion-grid">
+          <div class="suggestion" onclick="fillInput(this)">
+            <div class="s-label">Memory Test</div>
+            <div class="s-text">Tell me about yourself and what you can remember</div>
+          </div>
+          <div class="suggestion" onclick="fillInput(this)">
+            <div class="s-label">Project Help</div>
+            <div class="s-text">I'm working on a machine learning project, can you help?</div>
+          </div>
+          <div class="suggestion" onclick="fillInput(this)">
+            <div class="s-label">Context Gap</div>
+            <div class="s-text">What did we discuss earlier about my problem?</div>
+          </div>
+          <div class="suggestion" onclick="fillInput(this)">
+            <div class="s-label">Learning</div>
+            <div class="s-text">Explain how context recovery works in AI systems</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Thinking indicator -->
+    <div class="message-wrapper" id="thinkingWrapper">
+      <div class="message thinking" id="thinkingIndicator">
+        <div class="msg-avatar ai-av">
+          <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-8v4h4l-5 8z"/></svg>
+        </div>
+        <div class="msg-content">
+          <div class="msg-header">
+            <span class="msg-name">ContextAI</span>
+          </div>
+          <div class="thinking-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <div class="input-wrapper">
+      <div class="input-box">
+        <textarea id="userInput" rows="1" placeholder="Message ContextAI..." onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()">
+          <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+      </div>
+      <div class="input-hint">Press Enter to send &nbsp;·&nbsp; Shift+Enter for new line</div>
+    </div>
+  </div>
+</main>
+
+<script>
+  const username = "{{ username }}";
+  let msgCount = 0;
+  let sessionCount = 0;
+
+  // Set avatar initial
+  document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
+
+  function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 160) + 'px';
+  }
+
+  function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
+  }
+
+  function fillInput(el) {
+    const text = el.querySelector('.s-text').textContent;
+    const input = document.getElementById('userInput');
+    input.value = text;
+    autoResize(input);
+    input.focus();
+  }
+
+  function newChat() {
+    document.getElementById('messages').querySelectorAll('.msg-wrapper-real').forEach(e => e.remove());
+    msgCount = 0;
+    document.getElementById('emptyState').style.display = '';
+  }
+
+  function now() {
+    return new Date().toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'});
+  }
+
+  function appendMessage(role, text) {
+    const empty = document.getElementById('emptyState');
+    if (empty) empty.style.display = 'none';
+
+    const thinking = document.getElementById('thinkingWrapper');
+    const container = document.getElementById('messages');
+    const wrapper = document.createElement('div');
+    wrapper.className = 'message-wrapper msg-wrapper-real';
+
+    const isUser = role === 'user';
+    const name = isUser ? username : 'ContextAI';
+    const initials = isUser ? username.charAt(0).toUpperCase() : '';
+
+    wrapper.innerHTML = `
+      <div class="message">
+        <div class="msg-avatar ${isUser ? 'user-av' : 'ai-av'}">
+          ${isUser ? initials : `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-8v4h4l-5 8z"/></svg>`}
+        </div>
+        <div class="msg-content">
+          <div class="msg-header">
+            <span class="msg-name">${name}</span>
+            <span class="msg-time">${now()}</span>
+          </div>
+          <div class="msg-bubble ${isUser ? 'user' : 'ai'}">${escHtml(text)}</div>
+        </div>
+      </div>`;
+
+    container.insertBefore(wrapper, thinking);
+    container.scrollTop = container.scrollHeight;
+
+    if (role === 'user' && msgCount === 0) {
+      sessionCount++;
+      addSession('Conversation ' + sessionCount);
+    }
+    msgCount++;
+  }
+
+  function addSession(label) {
+    const list = document.getElementById('sessionList');
+    const el = document.createElement('div');
+    el.className = 'session-item active';
+    el.textContent = label;
+    list.querySelectorAll('.session-item').forEach(e => e.classList.remove('active'));
+    list.prepend(el);
+  }
+
+  function showThinking(show) {
+    const t = document.getElementById('thinkingIndicator');
+    if (show) t.classList.add('show');
+    else t.classList.remove('show');
+  }
+
+  function escHtml(str) {
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+  }
+
+  async function sendMessage() {
+    const input = document.getElementById('userInput');
+    const text = input.value.trim();
+    if (!text) return;
+
+    const btn = document.getElementById('sendBtn');
+    btn.disabled = true;
+    input.value = '';
+    input.style.height = 'auto';
+
+    appendMessage('user', text);
+    showThinking(true);
+    document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+
+    try {
+      const res = await fetch('/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({message: text})
+      });
+      const data = await res.json();
+      showThinking(false);
+      if (data.response) {
+        appendMessage('ai', data.response);
+      } else {
+        appendMessage('ai', 'An error occurred. Please try again.');
+      }
+    } catch {
+      showThinking(false);
+      appendMessage('ai', 'Connection error. Please check your connection and try again.');
+    }
+
+    btn.disabled = false;
+    input.focus();
+  }
+
+  // Load existing conversation on page load
+  (async function() {
+    try {
+      const res = await fetch('/history');
+      const data = await res.json();
+      if (data.history && data.history.length > 0) {
+        data.history.forEach(msg => appendMessage(msg.role, msg.text));
+      }
+    } catch {}
+  })();
+</script>
+</body>
+</html>

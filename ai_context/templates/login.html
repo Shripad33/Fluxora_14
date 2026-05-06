@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ContextAI — Sign In</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0c0d10;
+      --surface: #13151a;
+      --surface2: #1a1d25;
+      --border: #252836;
+      --border2: #2e3242;
+      --accent: #4f7cff;
+      --accent-glow: rgba(79, 124, 255, 0.15);
+      --accent-dim: rgba(79, 124, 255, 0.6);
+      --text: #e8eaf0;
+      --text-secondary: #7a7f96;
+      --text-tertiary: #4a4f65;
+      --error: #ff5e5e;
+      --success: #4cd97b;
+      --radius: 14px;
+      --radius-sm: 8px;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+    }
+
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Background grid */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(79,124,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,124,255,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      z-index: 0;
+    }
+
+    /* Glow orb */
+    body::after {
+      content: '';
+      position: fixed;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(79,124,255,0.08) 0%, transparent 70%);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 44px 40px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 0 0 1px rgba(79,124,255,0.04), 0 40px 80px rgba(0,0,0,0.5);
+      animation: slideUp 0.5s cubic-bezier(0.16,1,0.3,1);
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon svg {
+      width: 18px;
+      height: 18px;
+      fill: white;
+    }
+
+    .logo-name {
+      font-size: 17px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .logo-name span {
+      color: var(--accent);
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 600;
+      letter-spacing: -0.5px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: var(--radius-sm);
+      padding: 13px 16px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus {
+      border-color: var(--accent-dim);
+      box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    input::placeholder { color: var(--text-tertiary); }
+
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    button {
+      flex: 1;
+      padding: 13px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 15px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: white;
+    }
+
+    .btn-primary:hover { background: #3d6aff; transform: translateY(-1px); }
+    .btn-primary:active { transform: scale(0.98); }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border2);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .message {
+      margin-top: 16px;
+      padding: 11px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      display: none;
+    }
+
+    .message.error {
+      background: rgba(255, 94, 94, 0.1);
+      border: 1px solid rgba(255, 94, 94, 0.25);
+      color: var(--error);
+    }
+
+    .message.success {
+      background: rgba(76, 217, 123, 0.1);
+      border: 1px solid rgba(76, 217, 123, 0.25);
+      color: var(--success);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 28px 0 24px;
+    }
+
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .divider span {
+      font-size: 12px;
+      color: var(--text-tertiary);
+    }
+
+    .feature-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    .pill {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 5px 12px;
+      font-size: 11px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .pill-dot {
+      width: 5px;
+      height: 5px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    .spinner {
+      display: none;
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin: 0 auto;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo-row">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-8v4h4l-5 8z"/></svg>
+      </div>
+      <div class="logo-name">Context<span>AI</span></div>
+    </div>
+
+    <h1>Welcome back</h1>
+    <p class="subtitle">Sign in to continue your conversation with full context recovery.</p>
+
+    <div class="form-group">
+      <label>Username</label>
+      <input type="text" id="username" placeholder="Enter username" autocomplete="username"/>
+    </div>
+
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="password" placeholder="Enter password" autocomplete="current-password"/>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="doLogin()">
+        <span id="login-label">Sign In</span>
+        <div class="spinner" id="login-spinner"></div>
+      </button>
+      <button class="btn-secondary" onclick="doSignup()">
+        <span id="signup-label">Sign Up</span>
+        <div class="spinner" id="signup-spinner"></div>
+      </button>
+    </div>
+
+    <div class="message" id="msg"></div>
+
+    <div class="divider"><span>capabilities</span></div>
+
+    <div class="feature-pills">
+      <div class="pill"><div class="pill-dot"></div>Context Recovery</div>
+      <div class="pill"><div class="pill-dot"></div>Relevance Scoring</div>
+      <div class="pill"><div class="pill-dot"></div>Memory Reconstruction</div>
+      <div class="pill"><div class="pill-dot"></div>Coherent Replies</div>
+    </div>
+  </div>
+
+  <!-- Server-down notice — shown automatically if Flask is not running -->
+  <div id="serverNotice" style="display:none;margin-top:14px;padding:11px 14px;
+    border-radius:8px;font-size:12px;line-height:1.6;
+    background:rgba(255,180,0,.07);border:1px solid rgba(255,180,0,.22);color:#f0b429;">
+    <strong>Flask server is not running.</strong><br>
+    Open a terminal inside the project folder and run:<br>
+    <code style="font-family:monospace;font-size:11px;
+      background:rgba(255,180,0,.15);padding:1px 5px;border-radius:4px;">
+      pip install flask
+    </code>
+    then
+    <code style="font-family:monospace;font-size:11px;
+      background:rgba(255,180,0,.15);padding:1px 5px;border-radius:4px;">
+      python app.py
+    </code><br>
+    Then visit <code style="font-family:monospace;font-size:11px;
+      background:rgba(255,180,0,.15);padding:1px 5px;border-radius:4px;">
+      http://localhost:5000
+    </code>
+  </div>
+
+  <script>
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && document.activeElement.tagName !== 'BUTTON')
+    doLogin();
+});
+
+function setLoading(type, on) {
+  document.getElementById(type + '-label').style.display = on ? 'none' : 'block';
+  document.getElementById(type + '-spinner').style.display = on ? 'block' : 'none';
+  document.querySelectorAll('button').forEach(b => b.disabled = on);
+}
+
+function showMsg(text, type = 'error') {
+  const el = document.getElementById('msg');
+  el.textContent = text;
+  el.className = 'message ' + (type === 'success' ? 'success' : 'error');
+  el.style.display = 'block';
+}
+
+function hideMsg() {
+  document.getElementById('msg').style.display = 'none';
+}
+
+async function post(url, payload) {
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await res.json();
+    return data;
+
+  } catch (err) {
+    throw new Error("NETWORK_ERROR");
+  }
+}
+
+/* LOGIN */
+async function doLogin() {
+  hideMsg();
+
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim();
+
+  if (!u || !p) {
+    showMsg('Please enter both username and password.');
+    return;
+  }
+
+  setLoading('login', true);
+
+  try {
+    const data = await post('/login', { username: u, password: p });
+
+    if (data.success) {
+      showMsg('Login successful — redirecting...', 'success');
+      setTimeout(() => window.location.href = data.redirect, 500);
+    } else {
+      showMsg(data.message || 'Invalid credentials');
+      setLoading('login', false);
+    }
+
+  } catch (err) {
+    document.getElementById('serverNotice').style.display = 'block';
+    showMsg('Server not running. Start Flask.');
+    setLoading('login', false);
+  }
+}
+
+/* SIGNUP */
+async function doSignup() {
+  hideMsg();
+
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim();
+
+  if (!u || !p) {
+    showMsg('Please enter both username and password.');
+    return;
+  }
+
+  if (u.length < 3) {
+    showMsg('Username must be at least 3 characters.');
+    return;
+  }
+
+  if (p.length < 4) {
+    showMsg('Password must be at least 4 characters.');
+    return;
+  }
+
+  setLoading('signup', true);
+
+  try {
+    const data = await post('/signup', { username: u, password: p });
+
+    if (data.success) {
+      showMsg('Account created — redirecting...', 'success');
+      setTimeout(() => window.location.href = data.redirect, 500);
+    } else {
+      showMsg(data.message || 'Signup failed');
+      setLoading('signup', false);
+    }
+
+  } catch (err) {
+    document.getElementById('serverNotice').style.display = 'block';
+    showMsg('Server not running. Start Flask.');
+    setLoading('signup', false);
+  }
+}
+</script>

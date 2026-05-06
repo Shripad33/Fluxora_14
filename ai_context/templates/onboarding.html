@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>ContextAI — Set Up Your Profile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090d;--surface:#111318;--s2:#171a22;--s3:#1d2130;
+  --bd:#1e2130;--bd2:#252b3a;
+  --accent:#5b7fff;--ah:#4568f0;
+  --glow:rgba(91,127,255,.13);--dim:rgba(91,127,255,.5);
+  --tx:#e4e6f0;--tx2:#6e7490;--tx3:#363b55;
+  --err:#ff6b6b;--ok:#4cd97b;
+  --student:#7c5bff;--pro:#2ecc8f;--r:10px;
+}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif}
+body{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px;position:relative;overflow-x:hidden}
+
+body::before{content:'';position:fixed;inset:0;
+  background-image:radial-gradient(circle,rgba(91,127,255,.05) 1px,transparent 1px);
+  background-size:30px 30px;z-index:0;pointer-events:none}
+
+/* progress bar */
+.progress-wrap{width:100%;max-width:520px;margin-bottom:32px;z-index:1}
+.progress-top{display:flex;justify-content:space-between;margin-bottom:8px}
+.progress-label{font-size:12px;color:var(--tx2)}
+.progress-step{font-size:12px;color:var(--tx3)}
+.bar{height:3px;background:var(--bd2);border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;background:var(--accent);border-radius:2px;
+  transition:width .4s cubic-bezier(.4,0,.2,1);width:50%}
+
+/* card */
+.card{position:relative;z-index:1;background:var(--surface);
+  border:1px solid var(--bd);border-radius:20px;
+  padding:40px 36px 36px;width:100%;max-width:520px;
+  box-shadow:0 0 0 1px rgba(91,127,255,.04),0 28px 70px rgba(0,0,0,.5)}
+
+/* steps */
+.step{display:none;animation:fadeIn .3s ease both}
+.step.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateX(12px)}to{opacity:1;transform:translateX(0)}}
+
+/* logo row */
+.logo{display:flex;align-items:center;gap:9px;margin-bottom:26px}
+.licon{width:30px;height:30px;background:var(--accent);border-radius:8px;
+  display:flex;align-items:center;justify-content:center}
+.licon svg{width:15px;height:15px;fill:#fff}
+.lname{font-size:15px;font-weight:600;letter-spacing:-.3px}
+.lname span{color:var(--accent)}
+
+h2{font-size:21px;font-weight:600;letter-spacing:-.4px;margin-bottom:6px}
+.sub{font-size:13px;color:var(--tx2);line-height:1.55;margin-bottom:26px}
+
+/* ── STEP 1: user type cards ── */
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px}
+.type-card{border:1.5px solid var(--bd2);border-radius:14px;padding:22px 18px;
+  cursor:pointer;transition:all .2s;background:var(--s2);position:relative;overflow:hidden}
+.type-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .2s}
+.type-card:hover{border-color:var(--bd);transform:translateY(-2px)}
+.type-card.selected{border-color:var(--accent)}
+.type-card.selected.student{border-color:var(--student)}
+.type-card.selected.professional{border-color:var(--pro)}
+
+.type-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;
+  justify-content:center;margin-bottom:14px;font-size:22px}
+.type-card.student  .type-icon{background:rgba(124,91,255,.15)}
+.type-card.professional .type-icon{background:rgba(46,204,143,.15)}
+.type-card.selected.student     .type-icon{background:rgba(124,91,255,.25)}
+.type-card.selected.professional .type-icon{background:rgba(46,204,143,.25)}
+
+.type-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.type-desc {font-size:12px;color:var(--tx2);line-height:1.45}
+
+.check{position:absolute;top:12px;right:12px;width:20px;height:20px;border-radius:50%;
+  border:1.5px solid var(--bd2);display:flex;align-items:center;justify-content:center;transition:all .2s}
+.type-card.selected .check{border-color:var(--accent);background:var(--accent)}
+.type-card.selected.student .check{border-color:var(--student);background:var(--student)}
+.type-card.selected.professional .check{border-color:var(--pro);background:var(--pro)}
+.check svg{width:11px;height:11px;fill:#fff;display:none}
+.type-card.selected .check svg{display:block}
+
+/* ── STEP 2: interest chips ── */
+.interest-section{margin-bottom:20px}
+.section-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.07em;
+  color:var(--tx3);margin-bottom:10px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{padding:7px 13px;border-radius:100px;border:1px solid var(--bd2);
+  background:var(--s2);font-size:12px;font-weight:500;color:var(--tx2);
+  cursor:pointer;transition:all .17s;user-select:none}
+.chip:hover{border-color:var(--bd);color:var(--tx);transform:translateY(-1px)}
+.chip.selected{border-color:var(--accent);background:rgba(91,127,255,.12);color:var(--accent)}
+.chip.selected:hover{background:rgba(91,127,255,.18)}
+
+.sel-count{font-size:12px;color:var(--tx2);margin-top:10px}
+.sel-count span{color:var(--accent);font-weight:600}
+
+/* buttons */
+.btn-row{display:flex;gap:10px;margin-top:28px}
+.btn{flex:1;padding:13px;border:none;border-radius:var(--r);
+  font-family:'DM Sans',sans-serif;font-size:14px;font-weight:500;
+  cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--ah);transform:translateY(-1px);box-shadow:0 4px 16px rgba(91,127,255,.3)}
+.btn-primary:active{transform:scale(.97)}
+.btn-primary:disabled{background:var(--bd2);cursor:not-allowed;transform:none;box-shadow:none}
+.btn-ghost{background:transparent;color:var(--tx2);border:1px solid var(--bd2)}
+.btn-ghost:hover{background:var(--s2);color:var(--tx)}
+
+.spin{display:none;width:15px;height:15px;border:2px solid rgba(255,255,255,.25);
+  border-top-color:#fff;border-radius:50%;animation:rot .5s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+
+.msg{display:none;margin-top:12px;padding:10px 13px;border-radius:var(--r);
+  font-size:12px;background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.22);color:var(--err)}
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="progress-wrap">
+  <div class="progress-top">
+    <span class="progress-label" id="progress-label">Step 1 of 2 — Who are you?</span>
+    <span class="progress-step" id="progress-step">1 / 2</span>
+  </div>
+  <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
+</div>
+
+<div class="card">
+
+  <!-- ── STEP 1: Classification ── -->
+  <div class="step active" id="step1">
+    <div class="logo">
+      <div class="licon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-8v4h4l-5 8z"/></svg></div>
+      <div class="lname">Context<span>AI</span></div>
+    </div>
+    <h2>How would you describe yourself?</h2>
+    <p class="sub">This helps us personalise every response to match your level, goals, and communication style.</p>
+
+    <div class="type-grid">
+      <!-- Student -->
+      <div class="type-card student" id="card-student" onclick="selectType('student')">
+        <div class="check"><svg viewBox="0 0 12 12"><polyline points="1.5,6 4.5,9 10.5,3" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="type-icon">🎓</div>
+        <div class="type-title">Student</div>
+        <div class="type-desc">Learner, researcher, or someone currently in education. I'll explain concepts clearly and support your learning journey.</div>
+      </div>
+      <!-- Professional -->
+      <div class="type-card professional" id="card-professional" onclick="selectType('professional')">
+        <div class="check"><svg viewBox="0 0 12 12"><polyline points="1.5,6 4.5,9 10.5,3" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="type-icon">💼</div>
+        <div class="type-title">Professional</div>
+        <div class="type-desc">Working in industry, building products, or running a business. I'll give direct, practical, production-ready answers.</div>
+      </div>
+    </div>
+
+    <div class="msg" id="msg1"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="goStep2()">
+        Continue <svg viewBox="0 0 16 16" width="14" height="14" fill="currentColor"><path d="M6 3l5 5-5 5"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ── STEP 2: Interests ── -->
+  <div class="step" id="step2">
+    <div class="logo">
+      <div class="licon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-4H7l5-8v4h4l-5 8z"/></svg></div>
+      <div class="lname">Context<span>AI</span></div>
+    </div>
+    <h2>What are your interests?</h2>
+    <p class="sub">Pick everything that applies — the more you choose, the better I can tailor context recovery to your domain.</p>
+
+    <!-- Tech -->
+    <div class="interest-section">
+      <div class="section-label">Technology</div>
+      <div class="chips" id="chips-tech">
+        <div class="chip" data-id="ai"           onclick="toggleChip(this)">🤖 AI & ML</div>
+        <div class="chip" data-id="web"          onclick="toggleChip(this)">🌐 Web Dev</div>
+        <div class="chip" data-id="data"         onclick="toggleChip(this)">📊 Data Science</div>
+        <div class="chip" data-id="mobile"       onclick="toggleChip(this)">📱 Mobile</div>
+        <div class="chip" data-id="cybersecurity"onclick="toggleChip(this)">🔐 Cybersecurity</div>
+        <div class="chip" data-id="cloud"        onclick="toggleChip(this)">☁️ Cloud</div>
+        <div class="chip" data-id="devops"       onclick="toggleChip(this)">⚙️ DevOps</div>
+        <div class="chip" data-id="gaming"       onclick="toggleChip(this)">🎮 Game Dev</div>
+      </div>
+    </div>
+
+    <!-- Business -->
+    <div class="interest-section">
+      <div class="section-label">Business & Creative</div>
+      <div class="chips" id="chips-biz">
+        <div class="chip" data-id="business"  onclick="toggleChip(this)">📈 Business</div>
+        <div class="chip" data-id="finance"   onclick="toggleChip(this)">💰 Finance</div>
+        <div class="chip" data-id="marketing" onclick="toggleChip(this)">📣 Marketing</div>
+        <div class="chip" data-id="design"    onclick="toggleChip(this)">🎨 UI/UX Design</div>
+        <div class="chip" data-id="writing"   onclick="toggleChip(this)">✍️ Writing</div>
+        <div class="chip" data-id="law"       onclick="toggleChip(this)">⚖️ Law & Policy</div>
+      </div>
+    </div>
+
+    <!-- Science -->
+    <div class="interest-section">
+      <div class="section-label">Science & Academia</div>
+      <div class="chips" id="chips-sci">
+        <div class="chip" data-id="research"   onclick="toggleChip(this)">🔬 Research</div>
+        <div class="chip" data-id="math"       onclick="toggleChip(this)">➗ Mathematics</div>
+        <div class="chip" data-id="physics"    onclick="toggleChip(this)">⚛️ Physics</div>
+        <div class="chip" data-id="biology"    onclick="toggleChip(this)">🧬 Biology</div>
+        <div class="chip" data-id="chemistry"  onclick="toggleChip(this)">🧪 Chemistry</div>
+        <div class="chip" data-id="psychology" onclick="toggleChip(this)">🧠 Psychology</div>
+      </div>
+    </div>
+
+    <!-- Lifestyle -->
+    <div class="interest-section">
+      <div class="section-label">Lifestyle</div>
+      <div class="chips" id="chips-life">
+        <div class="chip" data-id="health" onclick="toggleChip(this)">🏃 Health & Fitness</div>
+        <div class="chip" data-id="music"  onclick="toggleChip(this)">🎵 Music</div>
+        <div class="chip" data-id="art"    onclick="toggleChip(this)">🖼️ Art</div>
+      </div>
+    </div>
+
+    <div class="sel-count">Selected: <span id="sel-count">0</span> interest(s) — choose at least 1</div>
+
+    <div class="msg" id="msg2"></div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" onclick="goStep1()">← Back</button>
+      <button class="btn btn-primary" id="finishBtn" onclick="finish()">
+        <span id="finish-lbl">Finish Setup</span>
+        <div class="spin" id="finish-spin"></div>
+      </button>
+    </div>
+  </div>
+
+</div><!-- /card -->
+
+<script>
+  let selectedType = null;
+  let selectedInterests = new Set();
+
+  /* ── Type selection ── */
+  function selectType(type){
+    selectedType = type;
+    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('card-'+type).classList.add('selected');
+    document.getElementById('msg1').style.display = 'none';
+  }
+
+  /* ── Step navigation ── */
+  function goStep1(){
+    document.getElementById('step1').classList.add('active');
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('bar-fill').style.width  = '50%';
+    document.getElementById('progress-label').textContent = 'Step 1 of 2 — Who are you?';
+    document.getElementById('progress-step').textContent  = '1 / 2';
+  }
+
+  function goStep2(){
+    if(!selectedType){
+      const m = document.getElementById('msg1');
+      m.textContent = 'Please select Student or Professional to continue.';
+      m.style.display = 'block';
+      return;
+    }
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('step2').classList.add('active');
+    document.getElementById('bar-fill').style.width  = '100%';
+    document.getElementById('progress-label').textContent = 'Step 2 of 2 — Your interests';
+    document.getElementById('progress-step').textContent  = '2 / 2';
+  }
+
+  /* ── Chip toggle ── */
+  function toggleChip(el){
+    const id = el.dataset.id;
+    if(selectedInterests.has(id)){
+      selectedInterests.delete(id);
+      el.classList.remove('selected');
+    } else {
+      if(selectedInterests.size >= 8){
+        alert('You can select up to 8 interests.'); return;
+      }
+      selectedInterests.add(id);
+      el.classList.add('selected');
+    }
+    document.getElementById('sel-count').textContent = selectedInterests.size;
+    document.getElementById('msg2').style.display = 'none';
+  }
+
+  /* ── Finish ── */
+  async function finish(){
+    if(selectedInterests.size === 0){
+      const m = document.getElementById('msg2');
+      m.textContent = 'Please select at least one interest.';
+      m.style.display = 'block';
+      return;
+    }
+
+    document.getElementById('finish-lbl').style.display = 'none';
+    document.getElementById('finish-spin').style.display = 'block';
+    document.getElementById('finishBtn').disabled = true;
+
+    try{
+      const res = await fetch('/save-profile',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          type:      selectedType,
+          interests: [...selectedInterests]
+        })
+      });
+      const data = await res.json();
+      if(data.success){
+        window.location.href = data.redirect;
+      } else {
+        const m = document.getElementById('msg2');
+        m.textContent = data.message || 'Something went wrong.';
+        m.style.display = 'block';
+        document.getElementById('finish-lbl').style.display = '';
+        document.getElementById('finish-spin').style.display = 'none';
+        document.getElementById('finishBtn').disabled = false;
+      }
+    } catch(err){
+      const m = document.getElementById('msg2');
+      m.textContent = 'Cannot reach server. Make sure app.py is running.';
+      m.style.display = 'block';
+      document.getElementById('finish-lbl').style.display = '';
+      document.getElementById('finish-spin').style.display = 'none';
+      document.getElementById('finishBtn').disabled = false;
+    }
+  }
+</script>
+</body>
+</html>
