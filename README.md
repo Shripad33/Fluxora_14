@@ -101,3 +101,20 @@ http://127.0.0.1:5000
 
 
 > “Our system reconstructs missing conversational context using relevance scoring and memory prioritization to ensure coherent AI responses.”
+>
+> ## 📸 Screenshots
+
+### Login Page
+<img width="1915" height="962" alt="login_page" src="https://github.com/user-attachments/assets/77ea8f8f-3f7a-4f82-9c20-deab3dca1382" />
+
+
+### Onboarding
+<img width="1918" height="961" alt="onboarding_image" src="https://github.com/user-attachments/assets/90ab6399-83aa-40a1-a57a-2298899b0656" />
+<img width="1907" height="968" alt="onboarding_2" src="https://github.com/user-attachments/assets/931a21b2-16f6-43b7-971f-b1488cce8805" />
+
+
+
+
+### Dashboard
+<img width="1917" height="957" alt="dashboard_page" src="https://github.com/user-attachments/assets/35c2d5d5-c28e-4414-9c3b-66192a529d19" />
+
